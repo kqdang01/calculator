@@ -109,5 +109,6 @@ function operate()
         operatorChain = 0;
         e = 0;
         decimalPlaces = 9;
+        num1 = null;
     }
 }
