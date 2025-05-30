@@ -17,7 +17,12 @@ numButtons.forEach(button => {
     button.addEventListener("click", () => {
         if (!parseInt(inputField.textContent) 
         || parseFloat(inputField.textContent) === result 
-        || inputField.textContent === result.toString()) inputField.textContent = "";
+        || inputField.textContent === result.toString()
+        || result === "bruh")
+        {
+            inputField.textContent = "";
+            result = "";
+        }
         if (inputField.textContent.length < 9)
         {
             if (!(button.textContent === "." && inputField.textContent.includes("."))) inputField.textContent += button.textContent;
