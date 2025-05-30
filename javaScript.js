@@ -4,18 +4,23 @@ const clearButton = document.querySelector(".clear");
 const operatorButtons = document.querySelectorAll(".operator");
 const operateButton = document.querySelector(".operate");
 const toggleButton = document.querySelector(".toggleSign");
+
 let num1 = null;
 let num2 = null;
-let result = null;
+let result = "";
 let currentOperator = "";
 let operatorChain = 0;
+let decimalPlaces = 9;
+let e = 0;
 
 numButtons.forEach(button => {
     button.addEventListener("click", () => {
+        if (!parseInt(inputField.textContent) 
+        || parseFloat(inputField.textContent) === result 
+        || inputField.textContent === result.toString()) inputField.textContent = "";
         if (inputField.textContent.length < 9)
         {
-            if (!parseInt(inputField.textContent) || parseFloat(inputField.textContent) === result){inputField.textContent = ""}
-            inputField.textContent += button.textContent;
+            if (!(button.textContent === "." && inputField.textContent.includes("."))) inputField.textContent += button.textContent;
             operatorButtons.forEach(button => button.style.filter = "brightness(1)");
         }
     })
@@ -29,40 +34,40 @@ clearButton.onclick = () => {
     inputField.textContent = "0";
     num1 = null;
     num2 = null;
-    result = null;
+    result = "";
+    operatorChain = 0;
     operatorButtons.forEach(button => button.style.filter = "brightness(1)");
 };
 
 operateButton.onclick = operate;
 toggleButton.onclick = () => {
     inputField.textContent *= -1;
-    if (result != null)
-    {
-        result *= -1;
-    }
+    if (result != "") result *= -1;
+    num1 = parseFloat(inputField.textContent);
 };
 
 function operatorButton()
 {
+    
     if (operatorChain === 1)
     {
         operate();
         num2 = null;
     }
     currentOperator = this.textContent;
+    operatorButtons.forEach(button => button.style.filter = "brightness(1)");
     this.style.filter = "brightness(1.4)";
-    num1 = parseFloat(inputField.textContent);
-    if (inputField.textContent.includes("%"))
-    {
-        num1 *= 0.01;
-    }
-    inputField.textContent = result;
+    if (inputField.textContent != "" && inputField.textContent !== "bruh") num1 = parseFloat(inputField.textContent);
+    if (inputField.textContent.includes("%")) num1 *= 0.01;
+    if (num1 != null && result === null && operatorChain) inputField.textContent = result;
+    if (result === "") inputField.textContent = "";
     operatorChain++;
+    if (operatorChain > 1) operatorChain = 1;
 }
 
 function operate()
 {
-    if (num1 !== null)
+    if (num1 !== null && inputField.textContent != "" && inputField.textContent !== "bruh")
     {
         num2 = parseFloat(inputField.textContent);
         if (inputField.textContent.includes("%"))
@@ -77,21 +82,32 @@ function operate()
         {
             case "+":
                 result = num1 + num2;
-                inputField.textContent = result;
                 break;
             case "–":
                 result = num1 - num2;
-                inputField.textContent = result;
                 break;
             case "×":
                 result = num1 * num2;
-                inputField.textContent = result;
                 break;
             case "÷":
                 result = num1/num2;
-                inputField.textContent = result;
+                if (num1 === 0 && num2 === 0) result = "bruh";
                 break;
         }
+        while (result.toString().length > 9)
+        {
+            while (result >= 1000000)
+            {
+                result = Math.floor(result/10);
+                e+= 1;
+            }
+            result = Math.round(result * (10**decimalPlaces))/(10**decimalPlaces);
+            decimalPlaces--;
+        }
+        if (e) result += `E${e}`;
+        inputField.textContent = result;
         operatorChain = 0;
+        e = 0;
+        decimalPlaces = 9;
     }
 }
